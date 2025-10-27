@@ -10,7 +10,11 @@
   },
   "dependencies": {
     "@astrojs/tailwind": "^6.0.2",
+    "@astrojs/vercel": "^9.0.0",
+    "@tailwindcss/vite": "^4.1.16",
     "astro": "^5.15.1",
+    "crypto-js": "^4.2.0",
+    "oauth-1.0a": "^2.2.6",
     "tailwindcss": "^4.1.16"
   }
 }

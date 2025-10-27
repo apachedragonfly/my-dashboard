@@ -1,0 +1,84 @@
+---
+import musicData from '../data/music.json';
+
+interface MusicEntry {
+  date: string;
+  idea: string;
+  link: string;
+}
+
+// Generate 30-day calendar
+const today = new Date();
+const days: Array<{ date: Date; entry: MusicEntry | null }> = [];
+
+for (let i = 29; i >= 0; i--) {
+  const date = new Date(today);
+  date.setDate(date.getDate() - i);
+  
+  const dateString = date.toISOString().split('T')[0];
+  const entry = musicData.find((item: MusicEntry) => item.date === dateString) || null;
+  
+  days.push({ date, entry });
+}
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
+const isToday = (date: Date) => {
+  const todayStr = today.toISOString().split('T')[0];
+  const dateStr = date.toISOString().split('T')[0];
+  return todayStr === dateStr;
+};
+---
+
+<section class="music-grid" aria-label="Music Ideas - Last 30 Days">
+  <h2 class="text-2xl font-bold mb-6">Music Ideas</h2>
+  <div class="grid grid-cols-7 gap-3">
+    {days.map(({ date, entry }) => (
+      <div
+        class={`
+          music-day rounded-lg p-3 min-h-[100px] transition-all duration-200
+          ${isToday(date) ? 'bg-emerald-900/40 border-2 border-emerald-500' : 'bg-gray-800 border border-gray-700'}
+          ${entry ? 'hover:bg-gray-700 hover:scale-105 cursor-pointer' : ''}
+        `}
+        aria-label={`${formatDate(date)}${entry ? `: ${entry.idea}` : ' - No entry'}`}
+      >
+        <div class="text-xs text-gray-400 font-semibold mb-2">
+          {formatDate(date)}
+        </div>
+        {entry ? (
+          <a
+            href={entry.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block text-sm text-white hover:text-emerald-400 transition-colors"
+          >
+            {entry.idea}
+          </a>
+        ) : (
+          <div class="text-gray-600 text-center text-xl">—</div>
+        )}
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .music-grid {
+    @apply w-full;
+  }
+
+  @media (max-width: 640px) {
+    .music-grid .grid {
+      @apply grid-cols-3;
+    }
+  }
+
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .music-grid .grid {
+      @apply grid-cols-5;
+    }
+  }
+</style>
+

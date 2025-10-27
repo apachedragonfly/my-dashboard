@@ -1,0 +1,22 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ReadingProgress from '../components/ReadingProgress.astro';
+
+export const prerender = true;
+---
+
+<Layout title="Books - My Dashboard">
+  <main id="main-content" class="max-w-4xl">
+    <header class="mb-8">
+      <h1 class="text-4xl font-bold mb-2">Books</h1>
+      <p class="text-gray-400">
+        Track your reading progress
+      </p>
+    </header>
+
+    <div class="space-y-6">
+      <ReadingProgress />
+    </div>
+  </main>
+</Layout>
+

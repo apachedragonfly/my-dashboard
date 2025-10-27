@@ -1,0 +1,100 @@
+---
+import koboData from '../data/kobo.json';
+
+interface Book {
+  title: string;
+  progress: number;
+  pages: number;
+  current: boolean;
+}
+
+interface ApiResponse {
+  error: boolean;
+  book: Book | null;
+  message?: string;
+}
+
+// Try fetching from Goodreads API first
+let book: Book | null = null;
+let dataSource = 'Kobo (cached)';
+
+try {
+  // In development, use relative URL; in production, use full URL
+  const apiUrl = import.meta.env.PROD 
+    ? `${import.meta.env.SITE || ''}/api/goodreads`
+    : '/api/goodreads';
+    
+  const response = await fetch(apiUrl);
+  
+  if (response.ok) {
+    const data: ApiResponse = await response.json();
+    
+    if (!data.error && data.book) {
+      book = data.book;
+      dataSource = 'Goodreads';
+    }
+  }
+} catch (error) {
+  console.error('Failed to fetch from Goodreads API:', error);
+}
+
+// Fallback to Kobo data if Goodreads failed
+if (!book) {
+  const currentBook = koboData.find((item: Book) => item.current);
+  if (currentBook) {
+    book = currentBook;
+  }
+}
+
+const getProgressPercentage = (book: Book | null) => {
+  if (!book || !book.pages) return 0;
+  return Math.round((book.progress / book.pages) * 100);
+};
+
+const progressPercentage = getProgressPercentage(book);
+---
+
+<section class="reading-progress bg-gray-800 rounded-lg p-6 border border-gray-700" aria-label="Reading Progress">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-2xl font-bold">Currently Reading</h2>
+    <span class="text-xs text-gray-400 bg-gray-900 px-2 py-1 rounded">
+      {dataSource}
+    </span>
+  </div>
+
+  {book ? (
+    <div class="space-y-4">
+      <h3 class="text-lg font-semibold text-emerald-400">{book.title}</h3>
+      
+      <div class="space-y-2">
+        <div class="flex justify-between text-sm text-gray-400">
+          <span>Progress</span>
+          <span>{book.progress} / {book.pages} pages ({progressPercentage}%)</span>
+        </div>
+        
+        <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+          <div
+            class="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full transition-all duration-500 ease-out"
+            style={`width: ${progressPercentage}%`}
+            role="progressbar"
+            aria-valuenow={progressPercentage}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`Reading progress: ${progressPercentage}%`}
+          />
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div class="text-gray-400 text-center py-8">
+      <p>No active book</p>
+    </div>
+  )}
+</section>
+
+<style>
+  .reading-progress:hover {
+    border-color: rgb(75, 85, 99);
+  }
+</style>
+

@@ -1,0 +1,137 @@
+---
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+  { name: 'Music', path: '/', icon: '🎵' },
+  { name: 'Books', path: '/books', icon: '📚' },
+  { name: 'Anki', path: '/anki', icon: '🧠' },
+];
+
+const isActive = (path: string) => {
+  if (path === '/' && currentPath === '/') return true;
+  if (path !== '/' && currentPath.startsWith(path)) return true;
+  return false;
+};
+---
+
+<nav class="sidebar" aria-label="Main Navigation">
+  <div class="sidebar-content">
+    <div class="logo mb-8">
+      <h2 class="text-xl font-bold bg-gradient-to-r from-emerald-400 to-blue-500 bg-clip-text text-transparent">
+        Dashboard
+      </h2>
+    </div>
+
+    <ul class="nav-links space-y-2">
+      {navItems.map((item) => (
+        <li>
+          <a
+            href={item.path}
+            class={`nav-link ${isActive(item.path) ? 'active' : ''}`}
+            aria-current={isActive(item.path) ? 'page' : undefined}
+          >
+            <span class="nav-icon" aria-hidden="true">{item.icon}</span>
+            <span class="nav-text">{item.name}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<style>
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 240px;
+    background-color: rgb(17, 24, 39);
+    border-right: 1px solid rgb(55, 65, 81);
+    padding: 2rem 1rem;
+    z-index: 10;
+  }
+
+  .sidebar-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    color: rgb(156, 163, 175);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+
+  .nav-link:hover {
+    background-color: rgb(31, 41, 55);
+    color: rgb(255, 255, 255);
+  }
+
+  .nav-link.active {
+    background-color: rgb(16, 185, 129);
+    color: rgb(255, 255, 255);
+  }
+
+  .nav-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .nav-text {
+    font-size: 0.875rem;
+  }
+
+  /* Mobile styles */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 100%;
+      height: auto;
+      position: static;
+      border-right: none;
+      border-bottom: 1px solid rgb(55, 65, 81);
+      padding: 1rem;
+    }
+
+    .sidebar-content {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      margin-bottom: 0 !important;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .nav-link {
+      padding: 0.5rem 1rem;
+    }
+
+    .nav-text {
+      display: none;
+    }
+
+    .nav-icon {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
