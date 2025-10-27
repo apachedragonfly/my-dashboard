@@ -9,10 +9,8 @@ interface AnkiResponse {
 let ankiData: AnkiResponse = { today: 0, error: true, message: 'Loading...' };
 
 try {
-  // In development, use relative URL; in production, use full URL
-  const apiUrl = import.meta.env.PROD 
-    ? `${import.meta.env.SITE || ''}/api/anki`
-    : '/api/anki';
+  // Use the current request URL to build the API URL
+  const apiUrl = new URL('/api/anki', Astro.url.origin);
     
   const response = await fetch(apiUrl);
   

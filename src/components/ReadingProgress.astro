@@ -19,10 +19,8 @@ let book: Book | null = null;
 let dataSource = 'Kobo (cached)';
 
 try {
-  // In development, use relative URL; in production, use full URL
-  const apiUrl = import.meta.env.PROD 
-    ? `${import.meta.env.SITE || ''}/api/goodreads`
-    : '/api/goodreads';
+  // Use the current request URL to build the API URL
+  const apiUrl = new URL('/api/goodreads', Astro.url.origin);
     
   const response = await fetch(apiUrl);
   
